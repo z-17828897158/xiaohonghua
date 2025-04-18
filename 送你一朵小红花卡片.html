@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>送你一朵小红花</title>
+    <style>
+        :root {
+            --primary-color: #ff6b81;
+            --secondary-color: #d45d8a;
+            --text-color: #333;
+            --bg-color: #fff9f9;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            transition: background-color 0.5s;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(255, 107, 129, 0.2);
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transform: translateY(0);
+            transition: transform 0.3s, box-shadow 0.3s;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(255, 107, 129, 0.3);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .title {
+            color: var(--primary-color);
+            font-size: 24px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .description {
+            color: var(--text-color);
+            font-size: 16px;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .flower-container {
+            height: 300px;
+            position: relative;
+            margin: 20px 0;
+        }
+        
+        .flower {
+            font-size: 80px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+        
+        .petal {
+            position: absolute;
+            background-color: var(--secondary-color);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: falling linear infinite;
+        }
+        
+        @keyframes falling {
+            to { transform: translateY(100vh) rotate(360deg); }
+        }
+        
+        .message {
+            background-color: rgba(255, 235, 238, 0.7);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            font-style: italic;
+            position: relative;
+        }
+        
+        .message:before {
+            content: '"';
+            font-size: 50px;
+            color: var(--primary-color);
+            opacity: 0.3;
+            position: absolute;
+            top: -10px;
+            left: 5px;
+        }
+        
+        .message:after {
+            content: '"';
+            font-size: 50px;
+            color: var(--primary-color);
+            opacity: 0.3;
+            position: absolute;
+            bottom: -30px;
+            right: 5px;
+        }
+        
+        .btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            margin: 30px auto;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn:after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--secondary-color);
+            z-index: -1;
+            transform: scale(0);
+            transition: transform 0.3s ease;
+            border-radius: 50px;
+        }
+        
+        .btn:hover:after {
+            transform: scale(1);
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .input-container {
+            margin-bottom: 20px;
+        }
+        
+        input {
+            padding: 10px;
+            border: 2px solid var(--primary-color);
+            border-radius: 50px;
+            width: 80%;
+            text-align: center;
+            font-size: 16px;
+        }
+        
+        .loading {
+            font-size: 18px;
+            margin: 20px 0;
+        }
+        
+        .loading:after {
+            content: '...';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+    </style>
+</head>
+<body>
+    <div class="card" id="questionCard">
+        <div class="title">送你一朵小红花</div>
+        <div class="description">开在你心底最深的泥沙</div>
+        <div class="input-container">
+            <input type="text" id="userInput" placeholder="亲爱的，请说出你的名字">
+        </div>
+        <button class="btn" onclick="generateFlowerCard()">生成我的花卡</button>
+    </div>
+    
+    <div class="card hidden" id="flowerCard">
+        <div class="title" id="cardTitle">春日小确幸</div>
+        <div class="description" id="cardDescription">送你一朵小红花</div>
+        <div class="flower-container">
+            <div class="flower" id="flowerEmoji">🌹</div>
+            <img id="specialPhoto" class="hidden" src="" alt="Special Photo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;">
+        </div>
+        <div class="message" id="blessingMessage">
+            愿你每一天都如花般绽放，生活充满小确幸！
+        </div>
+        <button class="btn" onclick="resetCard()">再送一朵</button>
+    </div>
+
+    <script>
+        const flowers = [
+            { emoji: "🌹", name: "红玫瑰", color1: "#ff6b81", color2: "#ff8e9e", keywords: ["爱", "热情", "浪漫"] },
+            { emoji: "🌻", name: "向日葵", color1: "#ffd700", color2: "#ffdf80", keywords: ["阳光", "希望", "积极"] },
+            { emoji: "🌸", name: "樱花", color1: "#ffb6c1", color2: "#ffd1dc", keywords: ["温柔", "美好", "春天"] },
+            { emoji: "🌼", name: "小雏菊", color1: "#ffffff", color2: "#fffacd", keywords: ["纯洁", "天真", "简单"] },
+            { emoji: "🏵️", name: "牡丹", color1: "#ff1493", color2: "#ff69b4", keywords: ["富贵", "华丽", "繁荣"] },
+            { emoji: "💮", name: "百合", color1: "#ffffff", color2: "#f8f8ff", keywords: ["纯洁", "高贵", "祝福"] }
+        ];
+        
+        const blessings = [
+            "生活就像这束花，总有绽放的时刻！",
+            "今天的你，值得所有美好！",
+            "对自己好一点，你配得上世间所有温柔~",
+            "保持微笑，像花儿一样向阳生长！",
+            "偶尔停一停，闻闻生活的芳香~",
+            "你本身就是一道美丽的风景！"
+        ];
+        
+        const titles = [
+            "花开有时",
+            "小春日和",
+            "心花怒放",
+            "春花绽放",
+            "花香满径",
+            "向阳而生"
+        ];
+        
+        function generateFlowerCard() {
+            const userInput = document.getElementById('userInput').value;
+            
+            // 关键词检测
+            const specialKeywords = {
+                "与涛有关": {
+                    "涛涛": { flowerIndex: 5, blessingIndex: 2, showPhoto: true, photoPath: "special_photo.jpg" },
+                    "钟涛": { flowerIndex: 1, blessingIndex: 3, showPhoto: true, photoPath: "special_photo.jpg" },
+                    "涛儿": { flowerIndex: 2, blessingIndex: 5, showPhoto: true, photoPath: "special_photo.jpg" },
+                    "涛子": { flowerIndex: 3, blessingIndex: 1, showPhoto: true, photoPath: "images/special_photo.jpg" },
+                    "宝": { flowerIndex: 4, blessingIndex: 4, showPhoto: true, photoPath: "images/special_photo.jpg" },
+                    "宝贝": { flowerIndex: 1, blessingIndex: 0, showPhoto: true, photoPath: "images/special_photo.jpg" },
+                    "亲爱的": { flowerIndex: 0, blessingIndex: 5, showPhoto: true, photoPath: "images/special_photo.jpg" },
+                    "想见你": { flowerIndex: 0, blessingIndex: 5, showPhoto: true, photoPath: "images/special_photo.jpg" }
+                },
+                "阿娇专属": {
+                    "阿娇": { flowerIndex: 3, blessingIndex: 1, showPhoto: true, photoPath: "images/special_photo1.jpg" },
+                    "娇": { flowerIndex: 4, blessingIndex: 4, showPhoto: true, photoPath: "images/special_photo1.jpg" },
+                    "娇娇": { flowerIndex: 1, blessingIndex: 0, showPhoto: true, photoPath: "images/special_photo1.jpg" },
+                    "郑娇": { flowerIndex: 0, blessingIndex: 5, showPhoto: true, photoPath: "images/special_photo1.jpg" },
+        
+                },
+                "负面词汇": {
+                    "恨你": { flowerIndex: 0, blessingIndex: 0, showPhoto: false, photoPath: "" },
+                    "SB": { flowerIndex: 0, blessingIndex: 0, showPhoto: false, photoPath: "" },
+                    "傻子": { flowerIndex: 0, blessingIndex: 0, showPhoto: false, photoPath: "" },
+                    "滚": { flowerIndex: 0, blessingIndex: 0, showPhoto: false, photoPath: "" },
+                    "笨蛋": { flowerIndex: 0, blessingIndex: 0, showPhoto: false, photoPath: "" },
+                    "傻瓜": { flowerIndex: 0, blessingIndex: 0, showPhoto: false, photoPath: "" },
+                    "傻Ⅹ": { flowerIndex: 0, blessingIndex: 0, showPhoto: false, photoPath: "" },
+                    "sb": { flowerIndex: 0, blessingIndex: 0, showPhoto: false, photoPath: "" },
+                    "傻逼": { flowerIndex: 0, blessingIndex: 0, showPhoto: false, photoPath: "" },
+                    "讨厌": { flowerIndex: 0, blessingIndex: 0, showPhoto: false, photoPath: "" },
+                },
+
+            };
+            
+            let selectedFlower, selectedBlessing, selectedTitle;
+            
+            let keywordCategory = null;
+            for (const category in specialKeywords) {
+                if (userInput in specialKeywords[category]) {
+                    keywordCategory = category;
+                    const { flowerIndex, blessingIndex, customMessage } = specialKeywords[category][userInput];
+                    selectedFlower = flowers[flowerIndex];
+                    selectedBlessing = customMessage || blessings[blessingIndex];
+                    selectedTitle = titles[flowerIndex];
+                    break;
+                }
+            }
+            
+            if (!keywordCategory) {
+                selectedFlower = flowers[Math.floor(Math.random() * flowers.length)];
+                selectedBlessing = blessings[Math.floor(Math.random() * blessings.length)];
+                selectedTitle = titles[Math.floor(Math.random() * titles.length)];
+            }
+            
+            const randomFlower = selectedFlower;
+            const randomBlessing = selectedBlessing;
+            const randomTitle = selectedTitle;
+            
+            // 根据花朵类型设置颜色
+            document.documentElement.style.setProperty('--primary-color', randomFlower.color1);
+            document.documentElement.style.setProperty('--secondary-color', randomFlower.color2);
+            
+            // 更新卡片内容
+            if (keywordCategory && specialKeywords[keywordCategory][userInput].showPhoto) {
+                document.getElementById('flowerEmoji').classList.add('hidden');
+                document.getElementById('specialPhoto').classList.remove('hidden');
+                document.getElementById('specialPhoto').src = specialKeywords[keywordCategory][userInput].photoPath;
+                // 确保照片在容器中正确显示
+                const flowerContainer = document.querySelector('.flower-container');
+                const flowerEmoji = document.getElementById('flowerEmoji');
+                const specialPhoto = document.getElementById('specialPhoto');
+                if (!flowerContainer.contains(specialPhoto)) {
+                    flowerContainer.appendChild(specialPhoto);
+                }
+            } else {
+                document.getElementById('flowerEmoji').classList.remove('hidden');
+                document.getElementById('specialPhoto').classList.add('hidden');
+                document.getElementById('flowerEmoji').textContent = randomFlower.emoji;
+            }
+            document.getElementById('blessingMessage').textContent = randomBlessing;
+            document.getElementById('cardTitle').textContent = randomTitle;
+            
+            // 根据用户输入调整描述
+            let description = "送你一束" + randomFlower.name;
+            if(userInput) {
+                if (keywordCategory) {
+                    if (keywordCategory === '与涛有关') {
+                        description = `
+                            <div style="text-align: center;">
+                                <div>确认过眼神，我们是双向奔赴的人！</div>
+                                <div>原来捧花的我盛装出席，只为亲手送🌹给你</div>
+                                <div>亲爱的朋友，我要大声告诉你</div>
+                            </div>
+                        `;
+                    } else if (keywordCategory === '阿娇专属') {
+                        description = `
+                            <div style="text-align: center;">
+                                <div>亲爱的阿娇，我没有可以送你的🌹</div>
+                                <div>因为满山的鲜花，都不及你好看</div>
+                                <div>但是，我想大声告诉你</div>
+                            </div>
+                       `;
+                    } else if (keywordCategory === '负面词汇') {
+                        description = `
+                            <div style="text-align: center;">
+                                <div>世界如此美妙，年轻人不要暴躁</div>
+                                <div>让小🍑子送你一朵花，并大声告诉你</div>
+                            </div>
+                       `;
+                    }
+                } else {
+                    description = "小🍑子送给" + userInput + "一束" + randomFlower.name + "，并偷偷告诉你";
+                }
+            }
+            document.getElementById('cardDescription').innerHTML = description;
+            
+            // 显示加载动画
+            document.getElementById('questionCard').classList.add('hidden');
+            document.getElementById('flowerCard').classList.remove('hidden');
+            
+            // 创建花瓣飘落效果
+            createPetals();
+        }
+        
+        function resetCard() {
+            document.getElementById('flowerCard').classList.add('hidden');
+            document.getElementById('questionCard').classList.remove('hidden');
+            document.getElementById('userInput').value = '';
+            
+            // 清除所有花瓣
+            const petals = document.querySelectorAll('.petal');
+            petals.forEach(petal => petal.remove());
+        }
+        
+        function createPetals() {
+            const container = document.querySelector('.flower-container');
+            const colors = ['var(--primary-color)', 'var(--secondary-color)', '#ffb6c1', '#ffdf80'];
+            
+            for(let i = 0; i < 15; i++) {
+                const petal = document.createElement('div');
+                petal.classList.add('petal');
+                
+                // 随机大小
+                const size = Math.random() * 15 + 5;
+                petal.style.width = `${size}px`;
+                petal.style.height = `${size}px`;
+                
+                // 随机颜色
+                petal.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // 随机位置
+                petal.style.left = `${Math.random() * 100}%`;
+                
+                // 随机动画时间和延迟
+                const duration = Math.random() * 5 + 3;
+                petal.style.animationDuration = `${duration}s`;
+                petal.style.animationDelay = `${Math.random() * 2}s`;
+                
+                container.appendChild(petal);
+            }
+        }
+    </script>
+</body>
+</html>
